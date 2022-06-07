@@ -48,7 +48,7 @@ echo -e "${YELLOW}^What do you want your password to be?${NC}"
 read MYSQL_PASSWORD
 echo -e "${YELLOW}^What do you want your panel name to be?(panel)${NC}"
 read MYSQL_PANEL_NAME
-mysql -u root -e "CREATE USER "$MYSQL_USERNAME"@'127.0.0.1' IDENTIFIED BY "$MYSQL_PASSWORD""
+mysql -u root -e "CREATE USER '$MYSQL_USERNAME'@'127.0.0.1' IDENTIFIED BY '$MYSQL_PASSWORD'"
 mysql -u root -e "CREATE DATABASE $MYSQL_PANEL_NAME"
 mysql -u root -e "GRANT ALL PRIVILEGES ON $MYSQL_PANEL_NAME.* TO '$MYSQL_USERNAME'@'127.0.0.1' WITH GRANT OPTION"
 echo -e "${GREEN}>>FINISHED MYSQL CONFIGURATION!${NC}"
