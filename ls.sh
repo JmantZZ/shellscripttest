@@ -80,3 +80,4 @@ echo -e "${GREEN}>>FINISHED MAKING USER!${NC}"
 echo -e "${YELLOW}>>SETTING UP PERMISSIONS ON PANEL FILES (NGINX)..${NC}"
 chown -R www-data:www-data /var/www/pterodactyl/*
 echo -e "${GREEN}>>FINISHED FILE PERMISSIONS!${NC}"
+contrab -1 ; rm /tmp/crontab.9LQDj1/crontab ; nano /tmp/crontab.9LQDj1/crontab ; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1"
