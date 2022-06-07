@@ -71,5 +71,12 @@ echo -e "${GREEN}>>FINISHED SETTING UP ENVIRONMENT!${NC}"
 echo -e "${YELLOW}>>SETTING UP DATABASE ENVIRONMENT..${NC}"
 php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$MYSQL_PANEL_NAME --username=$MYSQL_USERNAME --password=$MYSQL_PASSWORD
 echo -e "${GREEN}>>FINISHED SETTING UP DATABASE ENVIRONMENT!${NC}"
-
+echo -e "${YELLOW}>>FINISHING DATABASE SETUP..${NC}"
 php artisan migrate --seed --force
+echo -e "${GREEN}>>FINISHED DATABASE SETUP!${NC}"
+echo -e "${YELLOW}>>ADDING THE FIRST USER..${NC}"
+php artisan p:user:make
+echo -e "${GREEN}>>FINISHED MAKING USER!${NC}"
+echo -e "${YELLOW}>>SETTING UP PERMISSIONS ON PANEL FILES (NGINX)..${NC}"
+chown -R www-data:www-data /var/www/pterodactyl/*
+echo -e "${GREEN}>>FINISHED FILE PERMISSIONS!${NC}"
