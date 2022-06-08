@@ -119,6 +119,82 @@ echo -e "${YELLOW}Are ingress rules/firewall and the fqdn done? (yes) - (no)${NC
 rm /etc/nginx/sites-enabled/default
 cd /
 cd /etc/nginx/sites-available/
-wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/pterodactyl.conf
+echo '
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name '"$FQDN_VAR"';
+    return 301 https://$server_name$request_uri;
+}
+server {
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+    server_name '"$FQDN_VAR"';
+    
+    root /var/www/pterodactyl/public;
+    index index.php;
+
+    access_log /var/log/nginx/pterodactyl.app-access.log;
+    error_log  /var/log/nginx/pterodactyl.app-error.log error;
+
+    # allow larger file uploads and longer script runtimes
+    client_max_body_size 100m;
+    client_body_timeout 120s;
+
+    sendfile off;
+
+    # SSL Configuration
+    ssl_certificate /etc/letsencrypt/live/'"$FQDN_VAR"'/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/'"$FQDN_VAR"'/privkey.pem;
+    ssl_session_cache shared:SSL:10m;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384";
+    ssl_prefer_server_ciphers on;
+
+    add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;";
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "0";
+    add_header X-Robots-Tag none;
+    add_header Content-Security-Policy "upgrade-insecure-requests; block-all-mixed-content; frame-ancestors 'self'" always;
+    add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()" always;
+    add_header X-Frame-Options DENY;
+    add_header Referrer-Policy same-origin;
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M";
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTP_PROXY "";
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 300;
+        include /etc/nginx/fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+' | sudo -E tee /etc/nginx/sites-available/pterodactyl.conf >/dev/null 2>&1
+    ln -s /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
+    service nginx restart
+echo -e "${YELLOW}PROCEEDING WITH DOCKER INSTALLATION${NC}"
+curl -sSL https://get.docker.com/ | CHANNEL=stable bash
+systemctl enable --now docker
+echo -e "${GREEN}>>FINISHED DOCKER INSTALLATION!${NC}"
+echo -e "${YELLOW}PROCEEDING WITH WING INSTALLATION${NC}"
 cd /
-sed -i -e s/<domain>/$FQDN /etc/nginx/conf.d/pterodactyl.conf
+cd /etc/default/grub
+wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/grub
+mkdir -p /etc/pterodactyl
+curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+chmod u+x /usr/local/bin/wings
+echo -e "${GREEN}>>!${NC}"
