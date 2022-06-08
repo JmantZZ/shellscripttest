@@ -80,12 +80,41 @@ echo -e "${GREEN}>>FINISHED MAKING USER!${NC}"
 echo -e "${YELLOW}>>SETTING UP PERMISSIONS ON PANEL FILES (NGINX)..${NC}"
 chown -R www-data:www-data /var/www/pterodactyl/*
 echo -e "${GREEN}>>FINISHED FILE PERMISSIONS!${NC}"
+echo -e "${YELLOW}>>CONFIGURING CRONTAB..${NC}"
 crontab -l | {
     cat
     echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1"
 } | crontab -
+echo -e "${GREEN}>>FINISHED CONFIGURATION!${NC}"
+echo -e "${YELLOW}>>CREATING QUEUE WORKER..${NC}"
 cd /
 cd /etc/systemd/system
 wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/pteroq.service
 systemctl enable --now redis-server
 systemctl enable --now pteroq.service
+
+echo -e "${GREEN}>>FINISHED CREATING QUEUE WORKER!${NC}"
+echo -e "${GREEN}>>ALL SYSTEMS FUNCTIONING!${NC}"
+echo -e "${YELLOW}>>CREATING SSL CERTIFICATES (NGINX)..${NC}"
+sudo apt update
+sudo apt install -y certbot
+sudo apt install -y python3-certbot-nginx
+certbot certonly --nginx -d $FQDN_VAR
+certbot renew
+systemctl stop nginx
+certbot renew
+systemctl start nginx
+echo -e "${GREEN}>>FINISHED CREATING SSL CERTIFICATES!${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${YELLOW}Are ingress rules/firewall and the fqdn done? (yes) - (no)${NC}"
+read Y_OR_N
+if Y_OR_N=yes; then 
+echo -e "${YELLOW}>>PROCEEDING WITH WING INSTALLATION..${NC}"
+else 
+echo -e "${YELLOW}>>FAILED INSTALLING..${NC}"
