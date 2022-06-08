@@ -112,9 +112,13 @@ echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE
 echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
 echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
 echo -e "${RED}>>MAKE SURE INGRESS RULES/FIREWAL HAVE BEEN PROPERLY MADE AND THE FQDN POINTS AT THE RIGHT ADDRESS${NC}"
+echo -e "${YELLOW}PROCEEDING WITH WEBSERVER CONFIGURATION${NC}"
+rm /etc/nginx/sites-enabled/default
+
 echo -e "${YELLOW}Are ingress rules/firewall and the fqdn done? (yes) - (no)${NC}"
-read Y_OR_N
-if Y_OR_N=yes; then 
-echo -e "${YELLOW}>>PROCEEDING WITH WING INSTALLATION..${NC}"
-else 
-echo -e "${YELLOW}>>FAILED INSTALLING..${NC}"
+rm /etc/nginx/sites-enabled/default
+cd /
+cd /etc/nginx/sites-available/
+wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/pterodactyl.conf
+cd /
+sed -i -e s/<domain>/$FQDN /etc/nginx/conf.d/pterodactyl.conf
