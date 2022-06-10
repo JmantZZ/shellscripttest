@@ -75,7 +75,13 @@ echo -e "${YELLOW}>>FINISHING DATABASE SETUP..${NC}"
 php artisan migrate --seed --force
 echo -e "${GREEN}>>FINISHED DATABASE SETUP!${NC}"
 echo -e "${YELLOW}>>ADDING THE FIRST USER..${NC}"
-php artisan p:user:make
+echo -e "${YELLOW}What do you want the email of the user to be?${NC}"
+read USER_EMAIL
+echo -e "${YELLOW}What do you want the password of the user to be?${NC}"
+read USER_PASSWORD
+echo -e "${YELLOW}What do you want the username of the user to be?${NC}"
+read USER_NAME
+php artisan p:user:make --email=$USER_EMAIL --admin=1 --password=$USER_PASSWORD --username=$USER_NAME
 echo -e "${GREEN}>>FINISHED MAKING USER!${NC}"
 echo -e "${YELLOW}>>SETTING UP PERMISSIONS ON PANEL FILES (NGINX)..${NC}"
 chown -R www-data:www-data /var/www/pterodactyl/*
@@ -192,9 +198,15 @@ systemctl enable --now docker
 echo -e "${GREEN}>>FINISHED DOCKER INSTALLATION!${NC}"
 echo -e "${YELLOW}PROCEEDING WITH WING INSTALLATION${NC}"
 cd /
-cd /etc/default/grub
+cd /etc/default/
 wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/grub
 mkdir -p /etc/pterodactyl
 curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
 chmod u+x /usr/local/bin/wings
-echo -e "${GREEN}>>!${NC}"
+
+echo -e "${GREEN}>>INSTALLATION OF PANEL HAS BEEN ${NC}"
+cd / 
+wget /etc/systemd/system https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/wings.service
+echo -e "${GREEN}>>INSTALLATION OF PANEL HAS BEEN COMPLETED. MAKE SURE TO CREATE A NODE AND PASTE THE CONFIGURATION HERE /etc/pterodactyl/config.yml and do wings --debug${NC}"
+echo -e "${GREEN}>>FOR NODE ALLOCATION USE THE IP DOWN BELOW${NC}"
+hostname -I | awk '{print $1}'
