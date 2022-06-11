@@ -205,8 +205,8 @@ curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/l
 chmod u+x /usr/local/bin/wings
 
 echo -e "${GREEN}>>INSTALLATION OF PANEL HAS BEEN ${NC}"
-cd / 
-wget /etc/systemd/system https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/wings.service
+cd /etc/systemd/system 
+wget https://raw.githubusercontent.com/JmantZZ/shellscripttest/main/wings.service
 echo -e "${GREEN}>>INSTALLATION OF PANEL HAS BEEN COMPLETED. MAKE SURE TO CREATE A NODE AND PASTE THE CONFIGURATION HERE /etc/pterodactyl/config.yml and do wings --debug${NC}"
 echo -e "${GREEN}>>FOR NODE ALLOCATION USE THE IP DOWN BELOW${NC}"
 hostname -I | awk '{print $1}'
